@@ -1,0 +1,13 @@
+{
+  "bg": {
+    "schedule": {
+      "saveButton": "Добави",
+      "cancelButton": "Close",
+      "deleteButton": "Remove",
+      "newEvent": "Add Event",
+      "addTitle" : "",
+      "moreDetails" : "Подробно описание",
+      "close" : "Затвори/отмени"
+    }
+  }
+}

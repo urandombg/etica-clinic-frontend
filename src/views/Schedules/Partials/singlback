@@ -1,0 +1,24 @@
+<template>
+<v-container fluid>
+  <h1 class="display-1">
+    График стоматологични кабинети
+  </h1>
+<!--  wefwefwef-->
+  <kendo-scheduler :date="date"></kendo-scheduler>
+</v-container>
+</template>
+
+<script>
+export default {
+name: "SingleAppointmentSchedule",
+  data() {
+    return {
+      date: this.$moment().toDate()
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

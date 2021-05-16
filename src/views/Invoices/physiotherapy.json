@@ -1,0 +1,16 @@
+{
+  "physio": [
+    {"id": 1,
+      "code": "PT-0001","procedure_title": "Първичен преглед" ,
+      "unit_price": 40,
+      "measure": "бр."
+    },
+    {
+      "id": 2,
+      "code": "",
+      "procedure_title": "",
+      "unitPrice": 0,
+      "measure": "бр."
+    }
+  ]
+}

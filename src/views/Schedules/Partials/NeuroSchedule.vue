@@ -38,31 +38,20 @@
                           ref="kda"
                           :data-source="remoteDataSource()"
                           :showWorkHours="true"
+                          :workDayStart="workDayStart"
+                          :workDayEnd="workDayEnd"
                           :date-header-template="headerDayTemplate"
-                          :majorTick="15"
                           :mobile="true"
                           :event-template="eventTemplate"
                           @navigate="onNavigate">
            <kendo-scheduler-view :type="'day'"></kendo-scheduler-view>
-           <kendo-scheduler-view :type="'workWeek'"></kendo-scheduler-view>
+           <kendo-scheduler-view :type="'workWeek'" :selected="true"></kendo-scheduler-view>
            <kendo-scheduler-view :type="'month'"></kendo-scheduler-view>
            <kendo-scheduler-view :type="'agenda'"></kendo-scheduler-view>
          </kendo-scheduler>
        </v-col>
      </v-row>
     </v-col>
-<!--    <v-col cols="6" class="elevation-14">-->
-<!--      <h2 style="padding: 10px">-->
-<!--        График на високоспециализирани процедури-->
-<!--      </h2>-->
-<!--      <kendo-scheduler :date="secondCalDate"-->
-<!--                       :date-header-template="headerDayTemplate"-->
-<!--                       :majorTick="15"-->
-<!--                       @navigate="onNavigate"-->
-<!--                       :key="keyForSchedule"-->
-<!--                       :showWorkHours="true">-->
-<!--      </kendo-scheduler>-->
-<!--    </v-col>-->
   </v-row>
 </v-container>
 </template>
@@ -70,8 +59,15 @@
 <script>
 // const url = process.env.VUE_APP_REMOTE_SERVER_HOST_IP;
 import kendo from '@progress/kendo-ui'
+import '@progress/kendo-ui/js/messages/kendo.messages.bg-BG'
+import '@progress/kendo-ui/js/cultures/kendo.culture.bg-BG'
+import {KendoScheduler, KendoSchedulerView} from '@progress/kendo-scheduler-vue-wrapper'
 export default {
   name: "SpecialistSchedule",
+  components: {
+    'kendo-scheduler': KendoScheduler,
+    'kendo-scheduler-view': KendoSchedulerView,
+  },
   data() {
     return {
       currentSpecialist: null,
@@ -79,8 +75,8 @@ export default {
       secondCalDate: this.$moment().toDate(),
       keyForSchedule: 0,
       date: this.$moment().toDate(),
-      workDayStart: new Date(2020,10,10, 9,30,0),
-      workDayEnd: new Date(2020,10,10, 14,30,0),
+      workDayStart: new Date(2020, 10, 10, 8, 0, 0),
+      workDayEnd: new Date(2020, 10, 10, 19, 0, 0),
       doctors: [],
       eventTemplate: `<div class="#: title.toLowerCase().includes('лазер') ? 'red' : title #">#: kendo.toString(start, "hh:mm")  #  -  #: kendo.toString(end, "hh:mm") #
           <span>| #: title #</span></div>`,

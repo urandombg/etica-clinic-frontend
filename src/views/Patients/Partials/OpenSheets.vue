@@ -107,10 +107,13 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item @click="generateAmbulatoryFirstList(item)" v-show="item.type_of_sheet === 'Амб.Първичен'">
+          <v-list-item @click="generateAmbulatoryFirstList(item)"
+                       color="grey lighten-3"
+                       v-show="item.type_of_sheet === 'Амб.Първичен'">
             <v-list-item-title>Печат на първичен амбулаторен лист</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="generateAmbulatorySecondList(item)" v-show="item.type_of_sheet === 'Амб.Първичен'">
+          <v-list-item @click="generateAmbulatorySecondList(item)"
+                       v-show="item.type_of_sheet === 'Амб.Първичен'">
             <v-list-item-title>Издаване на вторичен амбулаторен лист</v-list-item-title>
           </v-list-item>
           <v-list-item>
@@ -205,7 +208,7 @@ export default {
   },
   methods: {
     getFirstAmbListDoc(item) {
-      console.log(item)
+      // console.log(item)
       this.$http.post(`/api/ambulatory/${item.id}/getFirstAmbSheetDocument`, item, {
         responseType: "arraybuffer"
       })
@@ -217,12 +220,16 @@ export default {
     },
 
     generateAmbulatoryFirstList(item) {
-      this.$http.post(`/api/ambulatory/${item.id}/generateAmbulatoryList`, item)
+      this.$http.post(`/api/ambulatory/${item.id}/generateAmbulatoryList`, item, {
+        responseType: "arraybuffer"
+      })
       .then(
-          () => {
-            setTimeout(() => {
-              this.getFirstAmbListDoc(item)
-            }, 500)
+          (data) => {
+            if (data.status === 200) {
+                var blob = new Blob([data.data], {type: "text/plain;charset=utf-8"});
+                FileSaver.saveAs(blob, 'doc.docx');
+            }
+
           }
       )
       .catch(

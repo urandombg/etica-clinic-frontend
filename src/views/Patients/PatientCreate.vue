@@ -111,16 +111,16 @@
         </v-col>
 
         <v-col cols="12" md="6">
-          <v-autocomplete v-model="patientInfo.street"
-                          required
-                          :disabled="!patientInfo.city"
-                          label="Адрес"
+<!--          <v-autocomplete v-model="patientInfo.street"-->
+<!--                          required-->
+<!--                          :disabled="!patientInfo.city"-->
+<!--                          label="Адрес"-->
+<!--                          :search-input.sync="streetSearch"-->
+<!--                          :item-text="fullStreetName"-->
+<!--                          :items="streets">-->
 
-                          :search-input.sync="streetSearch"
-                          :item-text="fullStreetName"
-                          :items="streets">
-
-          </v-autocomplete>
+<!--          </v-autocomplete>-->
+          <v-text-field v-model="patientInfo.street" label="Улица"></v-text-field>
         </v-col>
         <v-col cols="2" md="2">
           <v-text-field v-model="patientInfo.streetNumber"

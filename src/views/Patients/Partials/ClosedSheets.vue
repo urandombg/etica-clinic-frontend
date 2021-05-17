@@ -193,8 +193,23 @@
             </v-btn>
           </template>
           <v-list>
+            <v-list-item @click=" item.type_of_sheet === 'Амб. Първичен' ? generateAmbulatoryFirstList(item) : generateAmbulatorySecondList(item)"
+                         class="grey lighten-4">
+              <v-list-item-title>
+                <v-icon>
+                  mdi-download
+                </v-icon>
+                {{ item.type_of_sheet === 'Амб. Първичен' ? "ДА": "не" }}
+                Изтегли амбулаторния лист
+              </v-list-item-title>
+            </v-list-item>
             <v-list-item @click="getFirstAmbListDoc(item)">
-              <v-list-item-title>Изтегли амбулаторния лист</v-list-item-title>
+              <v-list-item-title>
+                <v-icon color="red">
+                  mdi-delete
+                </v-icon>
+                Изтрий този лист
+              </v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -221,7 +236,7 @@ export default {
         },
         {
           text: 'Лист №',
-          value: 'sheet_number'
+          value: 'id'
         },
         {
           text: 'Водеща диагноза',
@@ -269,7 +284,12 @@ export default {
   created() {
     this.closedSheets(this.$props.patientId);
   },
+  mounted() {
+  },
   methods: {
+    generateAmbulatorySecondList(item) {
+      this.getFirstAmbListDoc(item);
+    },
     getAmbulatoryListTreatments(item) {
       this.ambListTreatments = []
       setTimeout(() => {
@@ -291,14 +311,21 @@ export default {
       },750);
     },
     getFirstAmbListDoc(item) {
-      console.log(item)
-      this.$http.post(`/api/ambulatory/${item.id}/getFirstAmbSheetDocument`, item, {
+      this.$http.post(`/api/ambulatory/${item.id}/generateAmbulatoryList`, item, {
         responseType: "arraybuffer"
       })
           .then(
               (data) => {
                 // console.log('dt', data.data)
-                FileSaver.saveAs(new Blob([data.data]), 'doc.docx');
+                // console.log(FileSaver)
+                // console.log(crc32.str("9610124497"))
+                if (item.type_of_sheet.replace(' ', '') === 'Амб.Първичен') {
+                  console.log(this.$moment(item.date).format('DDmY'))
+
+                  FileSaver.saveAs(new Blob([data.data]), `${this.$moment(item.date).format('DDmY')}-initialExam.docx`);
+                } else {
+                  FileSaver.saveAs(new Blob([data.data]),  `${this.$moment(item.date).format('DDmY')}-finalExam.docx`);
+                }
               }
           )
       .catch((error) => {
@@ -321,8 +348,8 @@ export default {
     generateAmbulatoryFirstList(item) {
       this.$http.post(`/api/ambulatory/${item.id}/generateAmbulatoryList`, item)
           .then(
-              (data) => {
-                console.log('ЛОГАДАТ', data)
+              () => {
+                // console.log('ЛОГАДАТ', data)
               }
           )
           .catch(

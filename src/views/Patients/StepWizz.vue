@@ -560,6 +560,7 @@ export default {
         this.$http.post(`/api/ambulatory`, this.examForm)
             .then(
                 () => {
+                  this.closeStepWizzForm();
                 }
             )
             .catch(

@@ -9,11 +9,18 @@ import LoginComponent from "@/components/Login/LoginComponent";
 import Users from '@/views/Users/Users'
 import ViewUser from '@/views/Users/ViewUser'
 import Dashboard from '@/views/Dashboard/Dashboard'
+
 import SingleAppointmentSchedule from '@/views/Schedules/Partials/SingleAppointmentSchedule'
-// import SpecialistSchedule from '@/views/Schedules/Partials/SpecialistSchedule';
 import SpecialistSchedule2 from '@/views/Schedules/Partials/SpecialistSchedulev2';
 import OrthoAppointmentSchedule from '@/views/Schedules/Partials/OrthoAppointmentSchedule';
+import NeuroSchedule from '@/views/Schedules/Partials/NeuroSchedule';
+import CardioSchedule from '@/views/Schedules/Partials/CardioSchedule';
+import PediatricSchedule from '@/views/Schedules/Partials/PediatricSchedule';
 import SingleAppointmentSchedulev2 from '@/views/Schedules/Partials/SingleAppointmentSchedulev2';
+import EndocrinologySchedule from '@/views/Schedules/Partials/EndocrinologySchedule';
+import RheumatologySchedule from '@/views/Schedules/Partials/RheumatologySchedule';
+import NeuroSurgerySchedule from '@/views/Schedules/Partials/NeuroSurgerySchedule';
+
 import ProcedureList from '@/views/Procedures/ProcedureList';
 import CreateNewProcedure from '@/views/Procedures/CreateNewProcedure';
 import EditProcedure from '@/views/Procedures/EditProcedure';
@@ -77,6 +84,36 @@ export const routes = [
         path:'ortho',
         name: 'Ортопедия',
         component: OrthoAppointmentSchedule
+      },
+      {
+        path:'neuro',
+        name: 'График неврология',
+        component: NeuroSchedule
+      },
+      {
+        path:'pediatrics',
+        name: 'График "Детска неонатология"',
+        component: PediatricSchedule
+      },
+      {
+        path:'cardio',
+        name: 'График "Кардиология"',
+        component: CardioSchedule
+      },
+      {
+        path:'endocrinology',
+        name: 'График "Ендокринология"',
+        component: EndocrinologySchedule
+      },
+      {
+        path:'rheumatology',
+        name: 'График "Ревматология"',
+        component: RheumatologySchedule
+      },
+      {
+        path:'neurosurgery',
+        name: 'График "Неврохирургия"',
+        component: NeuroSurgerySchedule
       },
     ],
   },

@@ -52,7 +52,7 @@
         </v-col>
 
         <v-col cols="12" md="4" sm="4">
-          <v-card hover>
+          <v-card hover @click="$router.push(`/schedules/cardio`)">
             <v-card-title  class="red accent-4 white--text">
               Кардиология
             </v-card-title>
@@ -63,7 +63,7 @@
         </v-col>
 
         <v-col cols="12" md="4" sm="4">
-          <v-card hover>
+          <v-card hover @click="$router.push(`/schedules/endocrinology`)">
             <v-card-title  class="blue-grey white--text">
               Ендокринология
             </v-card-title>
@@ -74,7 +74,7 @@
         </v-col>
 
         <v-col cols="12" md="4" sm="4">
-          <v-card hover>
+          <v-card hover @click="$router.push(`/schedules/neuro`)">
             <v-card-title  class="indigo white--text">
               Неврология
             </v-card-title>
@@ -95,7 +95,7 @@
         </v-col>
 
         <v-col cols="12" md="4" sm="4">
-          <v-card hover>
+          <v-card hover @click="$router.push(`/schedules/rheumatology`)">
             <v-card-title  class="indigo accent white--text">
               Ревматология
             </v-card-title>
@@ -106,7 +106,7 @@
         </v-col>
 
         <v-col cols="12" md="4" sm="4">
-          <v-card hover>
+          <v-card hover @click="$router.push(`/schedules/neurosurgery`)">
             <v-card-title  class="indigo accent-4 white--text">
               Съдова хирургия
             </v-card-title>
@@ -117,7 +117,7 @@
         </v-col>
 
         <v-col cols="12" md="4" sm="4">
-          <v-card hover>
+          <v-card hover @click="$router.push(`/schedules/pediatrics`)">
             <v-card-title  class="pink white--text">
               Педиатрия
             </v-card-title>

@@ -4,28 +4,6 @@
       <h1>Пациенти</h1>
       <v-icon></v-icon>
     </v-subheader>
-<!--    <v-container fluid>-->
-<!--      <v-row>-->
-<!--        <v-col cols="10" md="10">-->
-<!--          <v-autocomplete label="Търси"-->
-<!--                          item-text="firstname"-->
-<!--                          item-value="firstname"-->
-<!--                          v-model="select"-->
-<!--                          :loading="loading"-->
-<!--                          :search-input.sync="search"-->
-<!--                          :items="items"-->
-<!--                          outline-->
-<!--                          hide-no-data>-->
-<!--            <template #item="{item}">-->
-<!--              {{ item.firstname }} {{ item.lastname}}-->
-<!--            </template>-->
-<!--          </v-autocomplete>-->
-<!--        </v-col>-->
-<!--        <v-col cols="2" md="2">-->
-<!--          <v-select :items="headers" :item-value="headers.value" :no-data-text="'nqma'" label="Търси по"></v-select>-->
-<!--        </v-col>-->
-<!--      </v-row>-->
-<!--    </v-container>-->
     <v-container fluid>
       <v-alert
           v-if="errors.length > 0"
@@ -53,101 +31,177 @@
           Добави нов пациент
         </span>
       </v-btn>
-      <v-spacer></v-spacer>
+
+<!--      <v-container fluid>-->
+<!--        <v-row>-->
+<!--          <v-col cols="10" md="10">-->
+<!--            <v-autocomplete label="Търси"-->
+<!--                            item-text="firstname"-->
+<!--                            item-value="firstname"-->
+<!--                            v-model="select"-->
+<!--                            :loading="loading"-->
+<!--                            :search-input.sync="search"-->
+<!--                            :items="items"-->
+<!--                            outline-->
+<!--                            hide-no-data>-->
+<!--              <template #item="{item}">-->
+<!--                {{ item.firstname }} {{ item.lastname}}-->
+<!--              </template>-->
+<!--            </v-autocomplete>-->
+<!--          </v-col>-->
+<!--          <v-col cols="2" md="2">-->
+<!--            <v-select :items="headers" :item-value="headers.value" :no-data-text="'nqma'" label="Търси по"></v-select>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+<!--      </v-container>-->
+<!--      <v-spacer></v-spacer>-->
       <v-row>
         <v-col cols="12"></v-col>
         <v-col cols="12"></v-col>
       </v-row>
-      <v-data-table :items="items"
-                    class="elevation-14"
-                    show-select
-                    item-class="striped"
-                    no-results-text="sdf"
-                    group-desc
-                    :loading="loading"
-                    :headers="headers">
-        <template #no-data>
-          <div class="display-3 warning white--text" style="padding: 30px">
-            Няма намерени резултати!
+      <vue-good-table :rows="items"
+                      :columns="headers"
+      >
+        <template slot="table-row" slot-scope="props">
+          <div v-if="props.column.label === 'действия'">
+            <v-btn @click="$router.push(`/patients/${props.row.id}`)">
+              Отвори
+            </v-btn>
+            <v-menu
+                offset-y
+            >
+              <template v-slot:activator="{ attrs, on }">
+                <v-btn
+                    color="light-blue"
+                    class="white--text"
+                    v-bind="attrs"
+                    v-on="on"
+                >
+                  Действия
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item link>
+                  <v-list-item-title>
+                    <v-icon>
+                      mdi-clock-in
+                    </v-icon>
+                    Запиши час за посещение
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item link>
+                  <v-list-item-title>
+                    <v-icon>
+                      mdi-email
+                    </v-icon>
+                    Изпрати съобщение
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item
+                    link
+                    @click="deletePatient(props.row)"
+                >
+                  <v-list-item-title>
+                    <div class="red accent-1">
+                      Изтрии
+                    </div>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </div>
         </template>
-        <template #item.firstname="{item}">
-          {{ item.firstname }}
-        </template>
-        <template #item.middlename="{item}">
-          {{ item.middlename }}
-        </template>
-        <template #item.lastname="{item}">
-          <strong>
-            {{ item.lastname }}
-          </strong>
-        </template>
-        <template #item.lastname="{item}">
-          <strong>
-            {{ item.lastname }}
-          </strong>
-        </template>
+      </vue-good-table>
+<!--      <v-data-table :items="items"-->
+<!--                    class="elevation-14"-->
+<!--                    show-select-->
+<!--                    item-class="striped"-->
+<!--                    no-results-text="sdf"-->
+<!--                    group-desc-->
+<!--                    :loading="loading"-->
+<!--                    :headers="headers">-->
+<!--        <template #no-data>-->
+<!--          <div class="display-3 warning white&#45;&#45;text" style="padding: 30px">-->
+<!--            Няма намерени резултати!-->
+<!--          </div>-->
+<!--        </template>-->
+<!--        <template #item.firstname="{item}">-->
+<!--          {{ item.firstname }}-->
+<!--        </template>-->
+<!--        <template #item.middlename="{item}">-->
+<!--          {{ item.middlename }}-->
+<!--        </template>-->
+<!--        <template #item.lastname="{item}">-->
+<!--          <strong>-->
+<!--            {{ item.lastname }}-->
+<!--          </strong>-->
+<!--        </template>-->
+<!--        <template #item.lastname="{item}">-->
+<!--          <strong>-->
+<!--            {{ item.lastname }}-->
+<!--          </strong>-->
+<!--        </template>-->
+<!--        <template #item.city="{item}">-->
+<!--          {{ item.city}}-->
+<!--        </template>-->
+<!--        <template #item.phone="{item}">-->
+<!--          <a :href="`tel:${item.phone}`">-->
+<!--            {{ item.phone}}-->
+<!--          </a>-->
+<!--        </template>-->
+<!--        <template #item.actions="{item}">-->
+<!--          <v-btn @click="$router.push(`/patients/${item.id}`)">-->
+<!--            Виж-->
+<!--          </v-btn>-->
+<!--          <v-menu-->
+<!--              offset-y-->
+<!--          >-->
+<!--            <template v-slot:activator="{ attrs, on }">-->
+<!--              <v-btn-->
+<!--                  color="light-blue"-->
+<!--                  class="ma-5"-->
+<!--                  v-bind="attrs"-->
+<!--                  v-on="on"-->
+<!--              >-->
+<!--               Действия-->
+<!--              </v-btn>-->
+<!--            </template>-->
 
-        <template #item.city="{item}">
-          {{ item.city}}
-        </template>
-        <template #item.phone="{item}">
-          <a :href="`tel:${item.phone}`">
-            {{ item.phone}}
-          </a>
-        </template>
-        <template #item.actions="{item}">
-          <v-btn @click="$router.push(`/patients/${item.id}`)">
-            Виж
-          </v-btn>
-          <v-menu
-              offset-y
-          >
-            <template v-slot:activator="{ attrs, on }">
-              <v-btn
-                  color="light-blue"
-                  class="ma-5"
-                  v-bind="attrs"
-                  v-on="on"
-              >
-               Действия
-              </v-btn>
-            </template>
-
-            <v-list>
-              <v-list-item>
-                <v-list-item-title>Виж</v-list-item-title>
-              </v-list-item>
-              <v-list-item link>
-                <v-list-item-title>
-                  <v-icon>
-                    mdi-clock-in
-                  </v-icon>
-                  Запиши час за посещение
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item link>
-                <v-list-item-title>
-                  <v-icon>
-                    mdi-email
-                  </v-icon>
-                  Изпрати съобщение
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                  link
-                  @click="deletePatient(item)"
-              >
-                <v-list-item-title>
-                  <div class="red accent-1">
-                   Изтрии
-                  </div>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </template>
-      </v-data-table>
+<!--            <v-list>-->
+<!--              <v-list-item>-->
+<!--                <v-list-item-title>Виж</v-list-item-title>-->
+<!--              </v-list-item>-->
+<!--              <v-list-item link>-->
+<!--                <v-list-item-title>-->
+<!--                  <v-icon>-->
+<!--                    mdi-clock-in-->
+<!--                  </v-icon>-->
+<!--                  Запиши час за посещение-->
+<!--                </v-list-item-title>-->
+<!--              </v-list-item>-->
+<!--              <v-list-item link>-->
+<!--                <v-list-item-title>-->
+<!--                  <v-icon>-->
+<!--                    mdi-email-->
+<!--                  </v-icon>-->
+<!--                  Изпрати съобщение-->
+<!--                </v-list-item-title>-->
+<!--              </v-list-item>-->
+<!--              <v-list-item-->
+<!--                  link-->
+<!--                  @click="deletePatient(item)"-->
+<!--              >-->
+<!--                <v-list-item-title>-->
+<!--                  <div class="red accent-1">-->
+<!--                   Изтрии-->
+<!--                  </div>-->
+<!--                </v-list-item-title>-->
+<!--              </v-list-item>-->
+<!--            </v-list>-->
+<!--          </v-menu>-->
+<!--        </template>-->
+<!--      </v-data-table>-->
     </v-container>
 
   </div>
@@ -155,13 +209,13 @@
 
 <script>
 // const url = process.env.VUE_APP_REMOTE_SERVER_HOST_IP;
-// import 'vue-good-table/dist/vue-good-table.css'
-// import { VueGoodTable } from 'vue-good-table';
+import 'vue-good-table/dist/vue-good-table.css'
+import { VueGoodTable } from 'vue-good-table';
 
 export default {
 name: "Patients",
   components: {
-  // VueGoodTable
+  VueGoodTable
   },
   data: function () {
     return {
@@ -226,9 +280,12 @@ name: "Patients",
           type: 'phone'
         },
         {
-          text: '',
+          text: 'действия',
+          label: 'действия',
           value: 'actions',
-          field: 'actions'
+          sortable: false,
+          field: 'actions',
+          html: true
         }
       ],
       foundedData: [],

@@ -6,123 +6,81 @@
     </v-icon>
     Върни се назад
   </v-btn>
-  <v-row>
-    <v-col v-if="selectedDentist" :key="scheduleInteractionKey" cols="12">
-      <h2 class="elevation-4 display-1" style="padding: 15px;">
-        График на д-р {{ selectedDentist.firstname }} {{ selectedDentist.lastname }}
-      </h2>
-      <kendo-scheduler :date="date"
-                       :data-source="orthoScheduler()"
-                       :workDayStart="workDayStart"
-                       :workDayEnd="workDayEnd"
-                       :showWorkHours="true"
-                       :mobile="true"
-                       @onSave="saveEvent"
-                       :date-header-template="headerDayTemplate"
-                       :majorTimeHeaderTemplate="majorTimeHeaderTemplate"
-                       :event-template="eventTemplate"
-                       :key="scheduleInteractionKey"
-                       >
-        <kendo-scheduler-view :type="'day'" ></kendo-scheduler-view>
-        <kendo-scheduler-view :type="'workWeek'" :selected="true"></kendo-scheduler-view>
-        <kendo-scheduler-view :type="'month'"></kendo-scheduler-view>
-        <kendo-scheduler-view :type="'agenda'"></kendo-scheduler-view>
-      </kendo-scheduler>
+  <v-container fluid>
+    <v-row>
+      <v-col v-for="(neurologist, key) in doctors" :key="key">
+        <v-card shaped :key="neurologist.id"
+                @click="currentSpecialist = neurologist"
+                :class="currentSpecialist === neurologist ? 'cyan white--text' : 'grey accent-3 white--text'">
+          <v-card-title>
+           <span v-if="neurologist"> {{ getFullSpecialist(neurologist) }}</span>
+          </v-card-title>
+          <v-card-text>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-row no-gutters v-if="currentSpecialist">
+    <v-col cols="12" class="elevation-4">
+      <v-row dense>
+        <v-col cols="8" style="border-bottom: 14px solid #00babb">
+          <h1 style="padding: 10px;" class="align-lg-baseline">
+            В момента се показва графикът на  <span>{{ getFullSpecialist(currentSpecialist) }}</span>
+          </h1>
+        </v-col>
+        <v-col cols="4" style="border-bottom: 14px solid #00babb; bottom: 0;">
+        </v-col>
+      </v-row>
+     <v-row>
+       <v-col cols="12">
+         <kendo-scheduler :date="date"
+                          ref="kda"
+                          :data-source="remoteDataSource()"
+                          :showWorkHours="true"
+                          :workDayStart="workDayStart"
+                          :workDayEnd="workDayEnd"
+                          :date-header-template="headerDayTemplate"
+                          :mobile="true"
+                          :event-template="eventTemplate"
+                          @navigate="onNavigate">
+           <kendo-scheduler-view :type="'day'"></kendo-scheduler-view>
+           <kendo-scheduler-view :type="'workWeek'" :selected="true"></kendo-scheduler-view>
+           <kendo-scheduler-view :type="'month'"></kendo-scheduler-view>
+           <kendo-scheduler-view :type="'agenda'"></kendo-scheduler-view>
+         </kendo-scheduler>
+       </v-col>
+     </v-row>
     </v-col>
   </v-row>
-  <v-dialog fullscreen
-            hide-overlay
-            v-model="eventFormDialog">
-    <v-toolbar
-        dark
-        color="primary"
-    >
-      <v-btn
-          icon
-          dark
-          @click="eventFormDialog = false"
-      >
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
-      <v-toolbar-title>Settings</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-toolbar-items>
-        <v-btn
-            color="green"
-            @click="eventFormDialog = false"
-        >
-          <v-icon>
-            mdi-plus
-          </v-icon>
-          Резервирай
-        </v-btn>
-      </v-toolbar-items>
-    </v-toolbar>
-    <v-card>
-      <v-card-title>title</v-card-title>
-      {{ time }}
-      <v-card-text>
-        <v-time-picker
-            v-model="time"
-            :allowed-hours="allowedHours"
-            :allowed-minutes="allowedMinutes"
-            class="mt-4"
-            format="24hr"
-            scrollable
-            min="9:30"
-            max="22:15"
-        ></v-time-picker>
-        <v-time-picker
-            v-model="time"
-            :allowed-hours="allowedHours"
-            :allowed-minutes="allowedMinutes"
-            class="mt-4"
-            format="24hr"
-            scrollable
-            min="9:30"
-            max="22:15"
-        ></v-time-picker>
-        <v-btn @click="saveEvent">
-          Save
-        </v-btn>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
 </v-container>
 </template>
 
 <script>
 // const url = process.env.VUE_APP_REMOTE_SERVER_HOST_IP;
+import kendo from '@progress/kendo-ui'
 import '@progress/kendo-ui/js/messages/kendo.messages.bg-BG'
 import '@progress/kendo-ui/js/cultures/kendo.culture.bg-BG'
-import kendo from '@progress/kendo-ui'
 import {KendoScheduler, KendoSchedulerView} from '@progress/kendo-scheduler-vue-wrapper'
-
 export default {
-name: "SingleAppointmentSchedule",
+  name: "SpecialistSchedule",
   components: {
     'kendo-scheduler': KendoScheduler,
     'kendo-scheduler-view': KendoSchedulerView,
   },
   data() {
     return {
-      allowedHours: null,
-      allowedMinutes: null,
-      time: null,
-      eventFormDialog: false,
-      scheduleInteractionKey: 0,
-      orthos: [],
-      selectedDentist: { "id": 9, "firstname": "Димитър", "middlename": null, "lastname": "Стаматов", "mobile": "1089715", "email": "Лекар по дентална медицина", "speciality":
-            "Ортопедия", "roomId": 6, "created_at": null, "updated_at": "2021-04-02 07:19:45", "affiliation_before": "Д-р", "affiliation_after": null }
-      ,
+      currentSpecialist: null,
+      currentDoctor: null,
+      secondCalDate: this.$moment().toDate(),
+      keyForSchedule: 0,
       date: this.$moment().toDate(),
       workDayStart: new Date(2020, 10, 10, 8, 0, 0),
       workDayEnd: new Date(2020, 10, 10, 19, 0, 0),
       doctors: [],
-      eventTemplate: '<div class="k.event.modified">#: kendo.toString(start, "H:mm")  #  -  #: kendo.toString(end, "H:mm") #' +
-          '<span> | #: title #</span> <span> - </span></div>',
+      eventTemplate: `<div class="#: title.toLowerCase().includes('лазер') ? 'red' : title #">#: kendo.toString(start, "hh:mm")  #  -  #: kendo.toString(end, "hh:mm") #
+          <span>| #: title #</span></div>`,
       headerDayTemplate: '<span>#=kendo.toString(date, \'dddd, dd.mM\')#</span>',
-      majorTimeHeaderTemplate: '<span>#=kendo.toString(date, \'HH:mm\')#</span>',
       workingHours: {
         start: this.$moment(),
         // end: this.$
@@ -132,10 +90,7 @@ name: "SingleAppointmentSchedule",
           id: "id",
           fields: {
             id: {from: "id", type: "number"},
-            title: {
-              from: "Title",
-              validation: {required: true, validationMessage: 'Това поле е задължително! Напиши поне име на пациент'}
-            },
+            title: {from: "Title", validation: {required: true, validationMessage: 'Това поле е задължително! Напиши поне име на пациент'}},
             start: {type: "date", from: "Start"},
             end: {type: "date", from: "End"},
             startTimezone: {from: "StartTimezone"},
@@ -152,59 +107,30 @@ name: "SingleAppointmentSchedule",
     }
   },
   mounted() {
-    this.$http.get(`/api/schedules/getOrthoSchedule`)
-    .then(
-        (data) => {
-          this.orthos = data.data
-        }
-    )
+    this.getDoctors()
   },
   methods: {
-    saveEvent() {
-      let eventData = {
-        title: 'mama',
-        start: new Date(2021,2,29, 8,15),
-        end: new Date(2021,2,29, 8,45),
-      }
-      var ds = this.orthoScheduler()
-      ds.add(eventData)
-      ds.sync();
-      this.eventFormDialog = false
-      ds.read()
-    },
-    logList(ev) {
-      ev.preventDefault();
-      this.eventFormDialog = true
-      
-      console.log(ev)
-    },
-    onNavigate(e) {
-      console.log(e)
-      this.scheduleInteractionKey +=1
-      this.date = e.date
-    },
-    orthoScheduler() {
-      // console.log(this.selectedDentist)
-      let roomId = this.selectedDentist.roomId
-      let doctorId = this.selectedDentist.id
-      let schedule = 1
-      console.log(roomId)
+    remoteDataSource() {
+      // console.log(this.currentSpecialist)
+      let roomId = this.currentSpecialist.roomId
+      let doctorId = this.currentSpecialist.id
+      let schedule = this.roomId
       return new kendo.data.SchedulerDataSource({
         transport: {
           read: {
-            url: `/api/schedules/getAppointments/${doctorId}`,
+            url: `/api/schedules/getAppointments/${this.currentSpecialist.id}`,
             method: 'GET',
-            dataType: 'json'
+            dataType: 'json',
           },
           update: {
-            url: `/api/schedules/updateRecord/0`,
+            url: `/api/schedules/updateRecord/${roomId}`,
             method: 'POST',
-            dataType: 'json'
+            dataType: 'json',
           },
           create: {
             url: `/api/schedules/createAndBlockEventForSpecialists/${doctorId}/${roomId}/${schedule}`,
             method: 'POST',
-            dataType: 'json'
+            dataType: 'json',
           },
           destroy: {
             url: `/api/schedules/destroyAppointment`,
@@ -217,20 +143,57 @@ name: "SingleAppointmentSchedule",
         schema: this.schema,
       })
     },
+    onNavigate(e) {
+      console.log(this.$refs.kda)
+      this.keyForSchedule +=1
+      this.secondCalDate = e.date
+    },
+    fullName(item) {
+      return `Д-р ${item.firstname} ${item.lastname}`
+    },
+    getDoctors() {
+      this.$http.get(`/api/schedules/getOrthoSchedule`)
+      .then(
+          (data) => {
+            // console.log(data.data)
+            this.doctors = data.data
+          }
+      ).catch(
+          (error) => {
+            this.$swal.fire({
+              icon: 'error',
+              text: `Проблем при извличането на данни от базата данни - ${error}`
+            })
+          }
+      )
+    },
+    getFullSpecialist(specialist) {
+      if (specialist.affiliation_after) {
+        return `${specialist.affiliation_before} ${specialist.firstname} ${specialist.lastname} ${specialist.affiliation_after}`
+      }
+      else {
+        return `${specialist.affiliation_before} ${specialist.firstname} ${specialist.lastname}`
+      }
+      // return `Somethings is not right here!!! Check DB`;
+    }
   },
   watch: {
-    selectedDentist() {
-      this.scheduleInteractionKey +=1
-    },
-    date (value) {
-      console.log('date', value)
+    currentSpecialist(v) {
+      this.currentDoctor = this.doctors.find(d => d.id === v)
+      // console.log(v)
     }
+  },
+  computed: {
+
   }
 }
 </script>
 
-<style scoped>
-.cok {
-
+<style>
+.movie-template {
+  background-color: #34b034;
+  color: #fafafa;
+  height: 100%;
 }
+
 </style>

@@ -159,7 +159,11 @@
                </v-card-title>
              </v-card>
              <v-card-text>
-               <closed-sheets :patient-id="$route.params.id" v-if="!stepWizShow"></closed-sheets>
+               <closed-sheets :patient-id="$route.params.id"
+                              :key="openedSheetsKey"
+                              v-if="!stepWizShow">
+
+               </closed-sheets>
              </v-card-text>
            </v-tab-item>
            <v-tab-item>
@@ -339,6 +343,11 @@ name: "PatientView",
     this.$root.$on('createFinalExam', function (dt) {
         self.stepWizShowSecondary = true
         self.firstAmbSheet = dt
+    });
+    this.$root.$on('closeSecondaryStepWizz', function () {
+      self.stepWizShowSecondary = false
+      self.stepWizzKey += 1
+
     });
   },
   beforeCreate() {

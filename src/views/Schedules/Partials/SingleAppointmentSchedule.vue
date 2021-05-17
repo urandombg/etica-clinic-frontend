@@ -10,7 +10,7 @@
   <h1 class="display-1">
     График стоматологични кабинети
   </h1>
-  <v-row>
+  <v-row dense>
     <v-col cols="12">
 <!--      <v-select v-model="selectedDentist"-->
 <!--                :items="dentists"-->
@@ -23,34 +23,38 @@
     <v-col cols="12">
       Лекари по дентална медицина:
     </v-col>
-    <v-col v-for="(dentist, key) in dentists" :key="dentist.firstname" cols="3">
-      <v-card @click="selectedDentist = dentist" :key="key" :class="selectedDentist === dentist ? 'cyan white--text' : 'grey accent-3 white--text'" shaped>
+    <v-col v-for="(dentist, key) in dentists" :key="dentist.firstname" cols="6" md="6" lg="12" xl="6">
+      <v-card @click="selectedDentist = dentist"
+              :key="key"
+              :class="selectedDentist === dentist ? 'cyan white--text' : 'grey accent-3 white--text'" >
         <v-card-title>
           Д-р {{ dentist.firstname }} {{ dentist.lastname }}
         </v-card-title>
       </v-card>
     </v-col>
-    <v-col v-if="selectedDentist" :key="scheduleInteractionKey" cols="12">
-      <h2 class="elevation-4 display-1" style="padding: 15px;">
-        График на д-р {{ selectedDentist.firstname }} {{ selectedDentist.lastname }}
-      </h2>
-      <kendo-scheduler :date="date"
-                       :data-source="dentistScheduler()"
-                       :workDayStart="workDayStart"
-                       :workDayEnd="workDayEnd"
-                       :showWorkHours="true"
-                       :mobile="true"
-                       :date-header-template="headerDayTemplate"
-                       :majorTimeHeaderTemplate="majorTimeHeaderTemplate"
-                       :event-template="eventTemplate"
-                       :key="scheduleInteractionKey"
-                       >
-        <kendo-scheduler-view :type="'day'" ></kendo-scheduler-view>
-        <kendo-scheduler-view :type="'workWeek'" :selected="true"></kendo-scheduler-view>
-        <kendo-scheduler-view :type="'month'"></kendo-scheduler-view>
-        <kendo-scheduler-view :type="'agenda'"></kendo-scheduler-view>
-      </kendo-scheduler>
-    </v-col>
+    <v-row>
+      <v-col v-if="selectedDentist" :key="scheduleInteractionKey" cols="12">
+        <h2 class="elevation-4 display-1" style="padding: 15px;">
+          График на д-р {{ selectedDentist.firstname }} {{ selectedDentist.lastname }}
+        </h2>
+        <kendo-scheduler :date="date"
+                         :data-source="dentistScheduler()"
+                         :workDayStart="workDayStart"
+                         :workDayEnd="workDayEnd"
+                         :showWorkHours="true"
+                         :mobile="true"
+                         :date-header-template="headerDayTemplate"
+                         :majorTimeHeaderTemplate="majorTimeHeaderTemplate"
+                         :event-template="eventTemplate"
+                         :key="scheduleInteractionKey"
+        >
+          <kendo-scheduler-view :type="'day'" ></kendo-scheduler-view>
+          <kendo-scheduler-view :type="'workWeek'" :selected="true"></kendo-scheduler-view>
+          <kendo-scheduler-view :type="'month'"></kendo-scheduler-view>
+          <kendo-scheduler-view :type="'agenda'"></kendo-scheduler-view>
+        </kendo-scheduler>
+      </v-col>
+    </v-row>
   </v-row>
 </v-container>
 </template>

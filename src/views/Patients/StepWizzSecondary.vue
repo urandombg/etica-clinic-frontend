@@ -14,10 +14,23 @@
     </h2>
     <br>
     <v-form>
+      <v-row>
+        <v-col cols="12">
+        <span style="font-size: 20px">
+          Изберете дата на вторични амбулаторен лист:
+        </span>
+          <v-date-picker v-model="examForm.date"
+                         full-width
+                         show-week
+                         show-current>
+
+          </v-date-picker>
+        </v-col>
+      </v-row>
      <v-row class="elevation-8">
        <v-col cols="6" class="elevation-8">
          <h2 style="padding: 10px" class="info display-1 white--text">
-           Анамнеза от Първичен амбулаторен лист № {{ $props.firstAmbSheet.id}}
+           Анамнеза от първично посещение
          </h2>
          <br>
          <p style="font-size: 20px">
@@ -27,7 +40,7 @@
        <v-col cols="6"
               class="elevation-12">
          <h2 style="padding: 10px" class="blue accent-3 display-1 white--text">
-           Обективно състояние от Първичен амбулаторен лист № {{ $props.firstAmbSheet.id}}
+           Обективно състояние от първично посещение
          </h2>
          <br>
          <p style="font-size: 20px">
@@ -35,7 +48,12 @@
          </p>
        </v-col>
        <v-col cols="12">
-         <v-date-picker v-model="examForm.date"></v-date-picker>
+         <v-btn block
+                @click="copyDataFromFirstAmbSheet($props)"
+                color="green"
+                class="white--text">
+           Копирай данните от първичния амбулаторен лист
+         </v-btn>
        </v-col>
        <v-col cols="6">
          <v-textarea outlined
@@ -45,16 +63,6 @@
                      height="320"
                      label="Анамнеза"
                      v-model="examForm.anamnesa">
-           <template #append>
-             <v-btn color="blue" class="white--text" rounded outlined>
-               <v-icon>
-                 mdi-menu
-               </v-icon>
-               <span>
-                Шаблони
-              </span>
-             </v-btn>
-           </template>
          </v-textarea>
        </v-col>
        <v-col cols="6">
@@ -66,16 +74,6 @@
                      v-model="examForm.obj_condition"
                      height="320"
          >
-           <template #append>
-             <v-btn color="blue" class="white--text" rounded outlined>
-               <v-icon>
-                 mdi-menu
-               </v-icon>
-               <span>
-                Шаблони
-              </span>
-             </v-btn>
-           </template>
          </v-textarea>
        </v-col>
      </v-row>
@@ -87,10 +85,8 @@
         </v-btn>
       </v-col>
     </v-row>
+    {{ examForm }}
   </v-container>
-  <pre>
-    {{ $props.firstAmbSheet }}
-  </pre>
 </div>
 </template>
 
@@ -120,6 +116,12 @@ export default {
 
   },
   methods: {
+    copyDataFromFirstAmbSheet(data) {
+      console.log(data)
+      // this.examForm.anamnesa = data
+      this.examForm.anamnesa = data.firstAmbSheet.anamnesa
+      this.examForm.obj_condition = data.firstAmbSheet.obj_condition
+    },
     createFinalVisit() {
       console.log(this.firstExam)
       // create second visit
@@ -127,6 +129,7 @@ export default {
       .then(
           (data) => {
             console.log("success", data)
+            this.$root.$emit('closeSecondaryStepWizz', true)
           }
       )
       .catch(

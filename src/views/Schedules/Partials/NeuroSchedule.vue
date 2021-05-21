@@ -21,6 +21,13 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-container fluid v-if="!currentSpecialist">
+    <v-card>
+      <v-card-title>
+        Моля, изберете специалист, за да се покаже разпределението на часовете.
+      </v-card-title>
+    </v-card>
+  </v-container>
   <v-row no-gutters v-if="currentSpecialist">
     <v-col cols="12" class="elevation-4">
       <v-row dense>

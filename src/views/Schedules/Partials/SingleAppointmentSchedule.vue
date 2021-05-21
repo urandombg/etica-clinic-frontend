@@ -43,6 +43,7 @@
                          :workDayEnd="workDayEnd"
                          :showWorkHours="true"
                          :mobile="true"
+                         @onAdd="logEvent"
                          :date-header-template="headerDayTemplate"
                          :majorTimeHeaderTemplate="majorTimeHeaderTemplate"
                          :event-template="eventTemplate"
@@ -120,7 +121,9 @@ name: "SingleAppointmentSchedule",
     )
   },
   methods: {
-
+    logEvent(ev) {
+      console.log(ev)
+    },
     onNavigate(e) {
       console.log(e)
       this.scheduleInteractionKey +=1

@@ -6,8 +6,10 @@
     </v-icon>
     Върни се назад
   </v-btn>
+  {{ this.$moment('18:30', ['hh']).add(30, 'minutes').format('HH:mm').toString() }}
+  <br>
   <h1 class="display-1">
-    График стоматологични кабинети
+    График стоматологични кабинетиьцж
   </h1>
   <v-row>
     <v-col cols="12">
@@ -32,6 +34,7 @@
                        :workDayEnd="workDayEnd"
                        :showWorkHours="true"
                        @add="logList"
+                       @edit="logList"
                        @onSave="saveEvent"
                        :date-header-template="headerDayTemplate"
                        :majorTimeHeaderTemplate="majorTimeHeaderTemplate"
@@ -45,6 +48,7 @@
       </kendo-scheduler>
     </v-col>
   </v-row>
+
   <v-dialog fullscreen
             hide-overlay
             v-model="eventFormDialog">
@@ -74,29 +78,55 @@
       </v-toolbar-items>
     </v-toolbar>
     <v-card>
-      <v-card-title>title</v-card-title>
-      {{ time }}
+      <v-card-title>Запазване на час в график</v-card-title>
       <v-card-text>
-        <v-time-picker
-            v-model="time"
-            :allowed-hours="allowedHours"
-            :allowed-minutes="allowedMinutes"
-            class="mt-4"
-            format="24hr"
-            scrollable
-            min="9:30"
-            max="22:15"
-        ></v-time-picker>
-        <v-time-picker
-            v-model="time"
-            :allowed-hours="allowedHours"
-            :allowed-minutes="allowedMinutes"
-            class="mt-4"
-            format="24hr"
-            scrollable
-            min="9:30"
-            max="22:15"
-        ></v-time-picker>
+        <v-row>
+          <v-row>
+            <v-col cols="12" md="6" lg="6">
+              <v-text-field v-model="scheduleEventModel.title" label="Записване на час за?"></v-text-field>
+              <v-row>
+                <v-btn>Първичен преглед</v-btn>
+                <v-btn>Вторичен преглед</v-btn>
+              </v-row>
+            </v-col>
+            <v-col cols="12" md="6" lg="6">
+              <v-text-field label="Име" v-model="scheduleEventModel.patient"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6" lg="6">
+              <v-text-field label="Телефон за обратна връзка" v-model="scheduleEventModel.patientPhone"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-col class="grey elevation-13">
+              <span>
+                Кога ще дойде пациентът?
+              </span>
+            <br>
+<!--          </v-col>-->
+<!--          <v-col>-->
+            {{ scheduleEventModel.selectedDateStart }}
+            <v-time-picker v-model="scheduleEventModel.start"
+                           @input="changeEv"
+                           scrollable
+                           format="24hr"></v-time-picker>
+          </v-col>
+          <v-col class="grey lighten-3 elevation-13">
+              <span>
+                Докога ще бъде зает специалистът?
+              </span>
+            <br>
+            <v-time-picker v-model="scheduleEventModel.end" scrollable format="24hr"></v-time-picker>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            {{ this.$moment(scheduleEventModel.selectedDateStart)}}
+
+            samo
+            <br>
+            {{ this.scheduleEventModel.start }}
+          </v-col>
+        </v-row>
+
         <v-btn @click="saveEvent">
           Save
         </v-btn>
@@ -130,8 +160,7 @@ name: "SingleAppointmentSchedule",
       eventFormDialog: false,
       scheduleInteractionKey: 0,
       dentists: [],
-      selectedDentist: { "id": 13, "firstname": "Деян", "middlename": null, "lastname": "Йорданов", "mobile": "1089715", "email": "Лекар по дентална медицина", "speciality": "Лекар по дентална медицина", "roomId": 10, "created_at": null, "updated_at": "2021-04-02 07:19:45", "affiliation_before": "Д-р", "affiliation_after": null }
-      ,
+      selectedDentist: { "id": 1, "firstname": "Рангел", "middlename": null, "lastname": "Проданов", "mobile": "0", "email": "0", "speciality": "Ортопед", "UIN_number": "123123123", "roomId": 0, "created_at": null, "updated_at": null, "affiliation_before": "D-р", "affiliation_after": null },
       date: this.$moment().toDate(),
       workDayStart: new Date(2020, 10, 10, 8, 0, 0),
       workDayEnd: new Date(2020, 10, 10, 19, 0, 0),
@@ -166,10 +195,24 @@ name: "SingleAppointmentSchedule",
           }
         },
       },
+      menu: false,
+      scheduleEventModel: {
+        title: null,
+        patient: null,
+        patientPhone: null,
+        patient_id: null,
+        doctor: null,
+        doctor_id: null,
+        start: null,
+        end: null,
+        selectedDateStart: this.$moment().format("Y-M-D"),
+        selectedDateEnd: null
+      }
     }
   },
   mounted() {
-    this.$http.get(`/api/schedules/getDentistsSchedule`)
+  // console.log(process.env.VUE_APP_REMOTE_SERVER_HOST_IP)
+    this.$http.get(`/api/schedules/getOrthoSchedule`)
     .then(
         (data) => {
           this.dentists = data.data
@@ -177,23 +220,31 @@ name: "SingleAppointmentSchedule",
     )
   },
   methods: {
-    saveEvent() {
-      let eventData = {
-        title: 'mama',
-        start: new Date(2021,2,29, 8,15),
-        end: new Date(2021,2,29, 8,45),
-      }
-      var ds = this.dentistScheduler()
-      ds.add(eventData)
-      ds.sync();
-      this.eventFormDialog = false
-      ds.read()
+    saveEvent(v) {
+      v.preventDefault();
+
+      let eventData = this.scheduleEventModel;
+      console.log(eventData)
+      // var ds = this.dentistScheduler()
+      // ds.add(eventData)
+      // ds.sync();
+      // this.eventFormDialog = false
+      // ds.read()
+    },
+    changeEv(v) {
+      console.log(v)
+      // let hour = ''
+      // let minutes = ''
+      //
+      // if (v === '')
     },
     logList(ev) {
       ev.preventDefault();
       this.eventFormDialog = true
-      
-      console.log(ev)
+      this.scheduleEventModel.selectedDateStart = this.$moment(ev.event.start)
+      this.scheduleEventModel.selectedDateEnd = this.$moment(ev.event.end).toString()
+      this.scheduleEventModel.start = this.scheduleEventModel.selectedDateStart.format('Y')
+      // console.log('predi', ev)
     },
     onNavigate(e) {
       console.log(e)
@@ -255,6 +306,13 @@ name: "SingleAppointmentSchedule",
     },
     date (value) {
       console.log('date', value)
+    },
+    'scheduleEventModel.start': function (val) {
+      console.log('onSet', val)
+      // console.log(this.scheduleEventModel.selectedDateStart)
+      // this.scheduleEventModel.start =val
+      // console.log(val)
+      // this.scheduleEventModel.end = this.$moment(val, ['HH:mm']).add(30, 'minutes').format('HH:mm').toString();
     }
   }
 }

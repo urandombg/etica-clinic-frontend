@@ -76,11 +76,6 @@ export const routes = [
         component: SpecialistSchedule2
       },
       {
-        path:'physiotherapists2',
-        name: 'Дентални лекари23',
-        component: SpecialistSchedule2
-      },
-      {
         path:'ortho',
         name: 'Ортопедия',
         component: OrthoAppointmentSchedule
@@ -114,6 +109,11 @@ export const routes = [
         path:'neurosurgery',
         name: 'График "Неврохирургия"',
         component: NeuroSurgerySchedule
+      },
+      {
+        path:'test',
+        name: 'test',
+        component: SingleAppointmentSchedulev2
       },
     ],
   },

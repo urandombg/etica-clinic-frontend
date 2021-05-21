@@ -76,6 +76,7 @@ name: "Login",
           .then(
               (data) => {
                 this.$store.commit('setApiKey', data.data.access_token)
+                localStorage.setItem('apiKey', data.data.access_token)
                 this.$router.push('/dashboard')
               }
           )

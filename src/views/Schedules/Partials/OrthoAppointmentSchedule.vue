@@ -8,7 +8,11 @@
   </v-btn>
   <v-container fluid>
     <v-row>
-      <v-col v-for="(neurologist, key) in doctors" :key="key">
+      <v-col v-for="(neurologist, key) in doctors"
+             cols="12"
+             md="6"
+             xl="6"
+             :key="key">
         <v-card shaped :key="neurologist.id"
                 @click="currentSpecialist = neurologist"
                 :class="currentSpecialist === neurologist ? 'cyan white--text' : 'grey accent-3 white--text'">
@@ -43,6 +47,8 @@
                           :date-header-template="headerDayTemplate"
                           :mobile="true"
                           :event-template="eventTemplate"
+                          @onAdd="onAdd"
+                          @edit="logchange"
                           @navigate="onNavigate">
            <kendo-scheduler-view :type="'day'"></kendo-scheduler-view>
            <kendo-scheduler-view :type="'workWeek'" :selected="true"></kendo-scheduler-view>
@@ -53,7 +59,18 @@
      </v-row>
     </v-col>
   </v-row>
+  <v-dialog v-model="eventDialog">
+    <v-card>
+      <v-form>
+        <v-text-field label="Име на пациента"></v-text-field>
+        <v-text-field label="ПРеглед за"></v-text-field>
+        <v-btn @click="onAdd">submit</v-btn>
+      </v-form>
+    </v-card>
+  </v-dialog>
+
 </v-container>
+
 </template>
 
 <script>
@@ -62,6 +79,9 @@ import kendo from '@progress/kendo-ui'
 import '@progress/kendo-ui/js/messages/kendo.messages.bg-BG'
 import '@progress/kendo-ui/js/cultures/kendo.culture.bg-BG'
 import {KendoScheduler, KendoSchedulerView} from '@progress/kendo-scheduler-vue-wrapper'
+
+kendo.culture('bg-BG');
+
 export default {
   name: "SpecialistSchedule",
   components: {
@@ -70,6 +90,7 @@ export default {
   },
   data() {
     return {
+      eventDialog: false,
       currentSpecialist: null,
       currentDoctor: null,
       secondCalDate: this.$moment().toDate(),
@@ -78,7 +99,7 @@ export default {
       workDayStart: new Date(2020, 10, 10, 8, 0, 0),
       workDayEnd: new Date(2020, 10, 10, 19, 0, 0),
       doctors: [],
-      eventTemplate: `<div class="#: title.toLowerCase().includes('лазер') ? 'red' : title #">#: kendo.toString(start, "hh:mm")  #  -  #: kendo.toString(end, "hh:mm") #
+      eventTemplate: `<div class="#: title.toLowerCase().includes('лазер') ? 'red' : title #">#: kendo.toString(start, "HH:mm")  #  -  #: kendo.toString(end, "HH:mm") #
           <span>| #: title #</span></div>`,
       headerDayTemplate: '<span>#=kendo.toString(date, \'dddd, dd.mM\')#</span>',
       workingHours: {
@@ -110,6 +131,16 @@ export default {
     this.getDoctors()
   },
   methods: {
+    onAdd(av) {
+      console.log(av)
+      this.remoteDataSource().add({
+        ded: "da"
+      })
+    },
+    logchange(e) {
+console.log('eeeeeeee,', e)
+
+    },
     remoteDataSource() {
       // console.log(this.currentSpecialist)
       let roomId = this.currentSpecialist.roomId
@@ -155,7 +186,6 @@ export default {
       this.$http.get(`/api/schedules/getOrthoSchedule`)
       .then(
           (data) => {
-            // console.log(data.data)
             this.doctors = data.data
           }
       ).catch(
@@ -180,12 +210,13 @@ export default {
   watch: {
     currentSpecialist(v) {
       this.currentDoctor = this.doctors.find(d => d.id === v)
-      // console.log(v)
-    }
+      console.log(v)
+      // this.$http.get(`/api/schedules/getAppointments/${this.currentSpecialist.id}`)
+      //     .then((data) => {
+      //       console.log(data.data)
+      //     })
+    },
   },
-  computed: {
-
-  }
 }
 </script>
 

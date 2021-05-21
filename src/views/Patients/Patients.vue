@@ -60,6 +60,7 @@
         <v-col cols="12"></v-col>
       </v-row>
       <vue-good-table :rows="items"
+                      :pagination-options="paginationOptions"
                       :columns="headers"
       >
         <template slot="table-row" slot-scope="props">
@@ -219,6 +220,21 @@ name: "Patients",
   },
   data: function () {
     return {
+      paginationOptions:{
+        enabled: true,
+        mode: 'pages',
+        perPage: 15,
+        position: 'top',
+        perPageDropdown: [5, 10, 15, 50, 100, 500],
+        dropdownAllowAll: true,
+        setCurrentPage: 2,
+        nextLabel: 'Следваща',
+        prevLabel: 'Предишна',
+        rowsPerPageLabel: 'Брой записи на страница',
+        ofLabel: 'от',
+        pageLabel: 'страница', // for 'pages' mode
+        allLabel: 'Всички',
+      },
       show: true,
       searchTerm: null,
       select: null,
@@ -294,11 +310,17 @@ name: "Patients",
       confToken: '',
     }
   },
+  created() {
+    if (!localStorage.getItem('apiKey')) {
+      this.$router.push({
+        path: '/login'
+      })
+    }
+  },
   mounted() {
     this.getPatients(); 
   },
   methods: {
-
     getPatients() {
       this.loading = true
       // console.log(this.$http.defaults.headers)
@@ -375,15 +397,8 @@ name: "Patients",
 }
 </script>
 
-<style scoped>
-@import "~@progress/kendo-ui/css/web/kendo.bootstrap-v4.css";
-</style>
-<style>
-.v-data-table-header {
-  font-family: Roboto;
-  size: 41px;
-  background-color: #efefef;
-}
+<style >
+
 .v-data-table-header .text-start {
   font-size: 40px;
 }

@@ -99,7 +99,6 @@
 </template>
 
 <script>
-
 import ParentContainer from "@/views/ParentContainer";
 export default {
   name: 'App',

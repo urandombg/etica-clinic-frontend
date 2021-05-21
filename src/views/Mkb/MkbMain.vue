@@ -2,7 +2,7 @@
 <div>
   <autocomplete :search="search"
                 ref="mkbSearch"
-                placeholder="Търси в диагноза в МКБ-10."
+                placeholder="Търси диагноза в МКБ-10."
                 :key="klok"
                 @keypress.enter="unhandledExcpt"
                 @submit="handleSubmit"
@@ -17,17 +17,24 @@
           <p>
             {{ result.name_latin }}
             <br>
-            <strong>секция: </strong> кодиране: <u>{{ result.icd_set.codes }}</u> - {{ result.icd_set.name }}
+            <strong>секция: </strong> <i style="color: #212020"><u>{{ result.icd_set.codes }}</u> - {{ result.icd_set.name }}</i>
           </p>
         </div>
       </li>
     </template>
     <template #no-results="{ res, props}">
-      nqma res {{ res }} {{ props }}
+      Няма намерени резултати! {{ res }} {{ props }}
     </template>
   </autocomplete>
   <br>
-  <v-btn @click="addDiagnoseToList" color="info" large block>
+  <v-btn @click="addDiagnoseToList"
+         color="info"
+         :disabled="disableSearch"
+         large
+         block>
+    <v-icon>
+      mdi-plus
+    </v-icon>
     Добави диагноза
   </v-btn>
 </div>
@@ -48,6 +55,7 @@ export default {
   data () {
     return {
       klok: 0,
+      disableSearch: false,
       items: [],
       chosenDiagnoses: [],
       diagnose: '',
@@ -61,24 +69,24 @@ export default {
 
   methods: {
     unhandledExcpt() {
-      this.$swal.fire({
-        icon: 'info',
-        text: 'Възможността за избор с бутон Enter ще бъде имплементирана по-късно. За сега е възможност избор на диагноса само с левия бутон на мишката.',
-        timer: 3900
-      })
-     this.klok++;
+      this.handleSubmit(this.diagnose)
     },
     handleSubmit(value) {
       this.diagnose = value
       value = null
+
     },
     addDiagnoseToList() {
       if (!this.diagnose) {
-        alert("Try again");
+        this.$swal.fire({
+          icon: 'warning',
+          text: 'Моля, изберете диагноза за въвеждане!'
+        })
       } else {
-        this.chosenDiagnoses.push(this.diagnose)
+        // this.chosenDiagnoses.push(this.diagnose)
         this.$emit('addDiagnose',this.diagnose)
         this.klok++;
+        this.diagnose = null
       }
     },
     getResultValue(result) {
@@ -113,20 +121,7 @@ export default {
     }
   },
   watch: {
-      // search(val) {
-      //   // Items have already been loaded
-      //   if (this.items.length > 0) return
-      //
-      //   this.isLoading = true
-      //     axios.get(`https://mediately.co/api/v4/icd/bg/?query=${val}`)
-      //         .then(res => {
-      //             this.items = res.data
-      //         })
-      //         .catch(err => {
-      //           console.log(err)
-      //         })
-      //         .finally(() => (this.isLoading = false))
-      // }
+
   }
 }
 </script>

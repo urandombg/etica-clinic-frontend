@@ -9,8 +9,16 @@ export default {
 name: "ParentContainer",
   beforeCreate() {
   },
+  mounted() {
+    if (!localStorage.getItem('apiKey')) {
+      this.$router.push(`/login`);
+    }
+  },
+  methods: {
+
+  },
   computed: {
-  breadCrumbs () {
+    breadCrumbs () {
     let pathArray = this.$route.path.split('/')
     pathArray.shift()
     const breadCrumbs = []
@@ -35,10 +43,12 @@ name: "ParentContainer",
     }
     return breadCrumbs
   }
-}
+  }
 }
 </script>
-
+<style>
+@import "~@progress/kendo-theme-bootstrap/dist/bootstrap-3.css";
+</style>
 <style scoped>
 
 </style>

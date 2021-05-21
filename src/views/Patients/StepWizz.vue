@@ -48,7 +48,7 @@
 <!--        Записване на часове-->
 <!--      </v-stepper-step>-->
       <v-divider></v-divider>
-      <v-stepper-step step="5">
+      <v-stepper-step step="3">
         Печат на амбулаторен лист
       </v-stepper-step>
     </v-stepper-header>
@@ -74,7 +74,7 @@
           <v-card-text>
             <v-row>
               <v-col cols="6">
-                <label for="dtd" style="font-size: 19px">Дата на първичния преглед:</label>
+                <label style="font-size: 19px">Дата на първичния преглед:</label>
                 <v-menu
                     v-model="menu2"
                     :close-on-content-click="false"
@@ -103,7 +103,7 @@
                 </v-menu>
               </v-col>
               <v-col cols="6">
-                <label for="typeOfVisit" style="font-size: 19px">Вид на прегледа: </label>
+                <label style="font-size: 19px">Вид на прегледа: </label>
                 <v-select v-model="examForm.visitType"
                           id="typeOfVisit"
                           label="Вид на прегледа"
@@ -419,12 +419,13 @@ export default {
       visitTypes: [
         {
           text: 'Амбулаторен първичен',
+          selected: true,
           value: 1,
         },
-        {
-          text: 'Амбулаторен вторичен',
-          value: 2,
-        },
+        // {
+        //   text: 'Амбулаторен вторичен',
+        //   value: 2,
+        // },
       ],
       isLoading: false,
       model: null,
@@ -446,14 +447,6 @@ export default {
     }
   },
   mounted() {
-    // if (this.$store.state.patientExam.date !== null) {
-    //   this.examForm.date = this.$store.state.patientExam.date
-    //   this.examForm.anamnesa = this.$store.state.patientExam.anamnesa
-    //   this.examForm.objectCondition = this.$store.state.patientExam.objectCondition
-    //   this.examForm.visitType = this.$store.state.patientExam.visitType
-    //   this.examForm.mainDiagnose = this.$store.state.patientExam.mainDiagnose
-    //   this.examForm.diagnosys = this.$store.state.patientExam.diagnosys
-    // }
     if (this.$props.patient) {
        this.examForm.patient = {
          id: this.$props.patient.id,

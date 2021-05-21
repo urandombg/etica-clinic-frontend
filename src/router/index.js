@@ -9,6 +9,7 @@ const router = new VueRouter({
   mode: 'history',
   routes
 })
+
 router.beforeEach((to, from, next) => {
   if (to.name !== 'Login' && !store.state.apiKey) {
     next({
